@@ -1,18 +1,30 @@
-use bracket_lib::prelude::*;
+use bevy::prelude::*;
 
-struct State {}
+#[derive(Component)]
+struct Person;
 
-impl GameState for State {
-    fn tick(&mut self, ctx: &mut BTerm) {
-        ctx.print(1, 1, "Hello Bracket World");
+#[derive(Component)]
+struct Name(String);
+
+fn add_people(mut commands: Commands) {
+    commands.spawn((Person, Name("Elaina Proctor".to_string())));
+    commands.spawn((Person, Name("Renzo Hume".to_string())));
+    commands.spawn((Person, Name("Zayna Nieves".to_string())));
+}
+
+fn main() {
+    App::new()
+        .add_systems(Startup, add_people)
+        .add_systems(Update, (hello_world, greet_people))
+        .run();
+}
+
+fn greet_people(query: Query<&Name, With<Person>>) {
+    for name in &query {
+        println!("hello {}!", name.0);
     }
 }
 
-fn main() -> BError {
-    let context = BTermBuilder::simple80x50()
-        .with_title("Hello Minimal Bracket World")
-        .build()?;
-
-    let gs: State = State {};
-    main_loop(context, gs)
+fn hello_world() {
+    println!("hello world!");
 }
